@@ -10,7 +10,23 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
-      h1("compahradex")
+      br(),
+      br(),
+      sidebarLayout(
+        sidebarPanel(
+          br(),
+          br(),
+          wellPanel(fileInput(inputId = "file_state_1_params",
+                              label = "Provide fit results for the first state:"),
+                    fileInput(inputId = "file_state_2_params",
+                              label = "Provide fit results for the second state:"))
+
+        ),
+        mainPanel(
+          plotOutput("state_1_params_plot"),
+          plotOutput("state_2_params_plot")
+        )
+      )
     )
   )
 }
