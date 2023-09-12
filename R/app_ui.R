@@ -14,17 +14,29 @@ app_ui <- function(request) {
       br(),
       sidebarLayout(
         sidebarPanel(
+          class = "HaDeX-tab-content-element",
+          br(),
+          img(src='./www/logo_2.png', width = "40%", align = "center"),
           br(),
           br(),
           wellPanel(fileInput(inputId = "file_state_1_params",
                               label = "Provide fit results for the first state:"),
                     fileInput(inputId = "file_state_2_params",
-                              label = "Provide fit results for the second state:"))
-
+                              label = "Provide fit results for the second state:")),
+          verbatimTextOutput("input_status")
         ),
         mainPanel(
-          plotOutput("state_1_params_plot"),
-          plotOutput("state_2_params_plot")
+          tabsetPanel(
+            tabPanel(
+              "Hires",
+              plotOutput("states_params_plot"),
+              plotOutput("distance_plot")
+            ),
+            tabPanel(
+              "Peptides"
+            )
+          )
+
         )
       )
     )
