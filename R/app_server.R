@@ -88,4 +88,31 @@ app_server <- function(input, output, session) {
 
   })
 
+  output[["states_class_components"]] <- renderPlot({
+
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
+
+    gridExtra::grid.arrange(
+      HRaDeX::plot_hires_components(state_1_hires_params()) +
+        ggplot2::labs(title = paste0("Class components sor state ", state_1_hires_params()[["State"]][1])),
+      HRaDeX::plot_hires_components(state_2_hires_params()) +
+        ggplot2::labs(title = paste0("Class components sor state ", state_2_hires_params()[["State"]][1]))
+    )
+
+  })
+
+  output[["plot_peptides_coverage"]] <- renderPlot({
+
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
+
+    gridExtra::grid.arrange(
+      HRaDeX::plot_cov_class(state_1_params()) +
+        ggplot2::labs(title = paste0("Class components sor state ", state_1_params()[["State"]][1])),
+      HRaDeX::plot_cov_class(state_2_params()) +
+        ggplot2::labs(title = paste0("Class components sor state ", state_2_params()[["State"]][1]))
+    )
+
+
+  })
+
 }

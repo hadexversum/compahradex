@@ -29,11 +29,20 @@ app_ui <- function(request) {
           tabsetPanel(
             tabPanel(
               "Hires",
-              plotOutput("states_params_plot"),
-              plotOutput("distance_plot")
+              plotOutput("states_params_plot", width = "95%"),
+              fluidRow(
+                column(width = 1),
+                column(
+                  width = 10,
+                  plotOutput("distance_plot")
+                )
+              ),
+              p("The residues with NA values for either state are not shown."),
+              plotOutput("states_class_components")
             ),
             tabPanel(
-              "Peptides"
+              "Peptides",
+              plotOutput("plot_peptides_coverage")
             )
           )
 
