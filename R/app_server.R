@@ -26,6 +26,24 @@ app_server <- function(input, output, session) {
 
   })
 
+  state_1_uc <- reactive({
+    data_file <- input[["file_state_1_uc"]]
+    if(is.null(data_file)){
+      NULL
+    } else {
+      read.csv(data_file[["datapath"]])
+    }
+  })
+
+  state_2_uc <- reactive({
+    data_file <- input[["file_state_2_uc"]]
+    if(is.null(data_file)){
+      NULL
+    } else {
+      read.csv(data_file[["datapath"]])
+    }
+  })
+
   ##
 
   check_protein <- reactive({
@@ -74,23 +92,33 @@ app_server <- function(input, output, session) {
 
   })
 
+  ## TAB: HIRES ##
+
   output[["states_params_plot"]] <- renderPlot({
 
-    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
     HRaDeX::plot_two_states(state_1_hires_params(),
                             state_2_hires_params())
   })
 
   output[["distance_plot"]] <- renderPlot({
 
-    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
     HRaDeX::plot_color_distance(two_states_dataset())
+
+  })
+
+  output[["uc_diff_plot"]] <- renderPlot({
+
+    validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
+    HRaDeX::plot_uc_distance(state_1_uc(),
+                             state_2_uc())
 
   })
 
   output[["states_class_components"]] <- renderPlot({
 
-    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
 
     gridExtra::grid.arrange(
       HRaDeX::plot_hires_components(state_1_hires_params()) +
@@ -113,6 +141,56 @@ app_server <- function(input, output, session) {
     )
 
 
+  })
+
+  ## TAB: Peptides ##
+
+  peptide_list <- reactive({
+
+    HRaDeX::get_peptide_list(state_1_uc())
+
+  })
+
+  output[["peptide_list_data"]] <- DT::renderDataTable({
+
+    DT::datatable(data = peptide_list(),
+              class = "table-bordered table-condensed",
+              extensions = "Buttons",
+              selection = "single",
+              options = list(pageLength = 10, dom = "tip", autoWidth = TRUE, target = 'cell'),
+              filter = "bottom",
+              rownames = FALSE)
+
+  })
+
+  peptide_list_proxy <- DT::dataTableProxy("peptide_list_data", session = session)
+
+  ##
+
+  observeEvent(input[["reset_peptide_list"]], {
+
+    DT::selectRows(peptide_list_proxy, NULL)
+
+  })
+
+  output[["uc_plot"]] <- renderPlot({
+
+    validate(need(!is.null(input[["peptide_list_data_rows_selected"]]), "Please select a peptide on the left in the `UC data` section." ))
+
+    tmp_fit_1 <- dplyr::filter(state_1_uc(),
+                               Sequence == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Sequence"]],
+                               Start == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Start"]],
+                               End == peptide_list()[[input[["peptide_list_data_rows_selected"]], "End"]])
+
+    tmp_fit_2 <- dplyr::filter(state_2_uc(),
+                               Sequence == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Sequence"]],
+                               Start == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Start"]],
+                               End == peptide_list()[[input[["peptide_list_data_rows_selected"]], "End"]])
+
+    HRaDeX::plot_uc(tmp_fit_1,
+                    tmp_fit_2,
+                    state_1_params(),
+                    state_2_params())
   })
 
 }
