@@ -46,6 +46,14 @@ app_server <- function(input, output, session) {
 
   ##
 
+  fractional <- reactive({
+
+    if(any(state_1_params()[["n_1"]] > 2) | any(state_1_params()[["n_2"]] > 2)){
+      FALSE
+    } else { TRUE }
+
+  })
+
   check_protein <- reactive({
 
     state_1_params()[["Protein"]][1] == state_2_params()[["Protein"]][1]
@@ -74,14 +82,14 @@ app_server <- function(input, output, session) {
   state_1_hires_params <- reactive({
 
     HRaDeX::calculate_hires(state_1_params(),
-                            fractional = T)
+                            fractional = fractional())
 
   })
 
   state_2_hires_params <- reactive({
 
     HRaDeX::calculate_hires(state_2_params(),
-                            fractional = T)
+                            fractional = fractional())
 
   })
 
@@ -134,9 +142,11 @@ app_server <- function(input, output, session) {
     validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
 
     gridExtra::grid.arrange(
-      HRaDeX::plot_cov_class(state_1_params()) +
+      HRaDeX::plot_cov_class(state_1_params(),
+                             fractional = fractional()) +
         ggplot2::labs(title = paste0("Class components sor state ", state_1_params()[["State"]][1])),
-      HRaDeX::plot_cov_class(state_2_params()) +
+      HRaDeX::plot_cov_class(state_2_params(),
+                             fractional = fractional()) +
         ggplot2::labs(title = paste0("Class components sor state ", state_2_params()[["State"]][1]))
     )
 
@@ -147,7 +157,7 @@ app_server <- function(input, output, session) {
 
   peptide_list <- reactive({
 
-    HRaDeX::get_peptide_list(state_1_uc())
+    HRaDeX::get_peptide_list(rbind(state_1_uc(), state_1_uc()))
 
   })
 
@@ -190,7 +200,8 @@ app_server <- function(input, output, session) {
     HRaDeX::plot_uc(tmp_fit_1,
                     tmp_fit_2,
                     state_1_params(),
-                    state_2_params())
+                    state_2_params(),
+                    fractional = fractional())
   })
 
 }
