@@ -48,7 +48,7 @@ app_server <- function(input, output, session) {
 
   fractional <- reactive({
 
-    if(any(state_1_params()[["n_1"]] > 2) | any(state_1_params()[["n_2"]] > 2)){
+    if(any(state_1_params()[["n_1"]] > 2, na.rm = TRUE) | any(state_1_params()[["n_2"]] > 2, na.rm = TRUE)){
       FALSE
     } else { TRUE }
 
