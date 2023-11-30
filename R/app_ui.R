@@ -50,16 +50,18 @@ app_ui <- function(request) {
           tabsetPanel(
             tabPanel(
               "Hires",
-              plotOutput_h("states_params_plot"),
-              plotOutput_h("distance_plot"),
+              ggiraph::girafeOutput("states_params_plot"),
+              ggiraph::girafeOutput("distance_plot"),
               p("The residues with NA values for either state are not shown."),
-              plotOutput_h("uc_diff_plot"),
-              plotOutput_h("states_class_components")
+              ggiraph::girafeOutput("uc_diff_plot"),
+              ggiraph::girafeOutput("state_1_class_components"),
+              ggiraph::girafeOutput("state_2_class_components", width = "100%")
             ),
             tabPanel(
               "Peptides",
-              plotOutput_h("plot_peptides_coverage"),
-              plotOutput_h("uc_plot")
+              ggiraph::girafeOutput("plot_peptides_coverage_1"),
+              ggiraph::girafeOutput("plot_peptides_coverage_2"),
+              ggiraph::girafeOutput("uc_plot")
             )
           )
 

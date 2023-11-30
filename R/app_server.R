@@ -102,57 +102,90 @@ app_server <- function(input, output, session) {
 
   ## TAB: HIRES ##
 
-  output[["states_params_plot"]] <- renderPlot({
+  output[["states_params_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
     HRaDeX::plot_two_states(state_1_hires_params(),
-                            state_2_hires_params())
+                            state_2_hires_params(),
+                            interactive = T)
   })
 
-  output[["distance_plot"]] <- renderPlot({
+  output[["distance_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
-    HRaDeX::plot_color_distance(two_states_dataset())
+    HRaDeX::plot_color_distance(two_states_dataset(),
+                                interactive = T)
 
   })
 
-  output[["uc_diff_plot"]] <- renderPlot({
+  output[["uc_diff_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
     HRaDeX::plot_uc_distance(state_1_uc(),
-                             state_2_uc())
+                             state_2_uc(),
+                             interactive = T)
 
   })
 
-  output[["states_class_components"]] <- renderPlot({
+  output[["state_1_class_components"]] <- ggiraph::renderGirafe({
 
-    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
+    validate(need(!is.null(state_1_params()), "Please upload necessary files."))
 
-    gridExtra::grid.arrange(
-      HRaDeX::plot_hires_components(state_1_hires_params()) +
-        ggplot2::labs(title = paste0("Class components sor state ", state_1_hires_params()[["State"]][1])),
-      HRaDeX::plot_hires_components(state_2_hires_params()) +
-        ggplot2::labs(title = paste0("Class components sor state ", state_2_hires_params()[["State"]][1]))
-    )
+    plot <- HRaDeX::plot_hires_components(state_1_hires_params(),
+                                          interactive = T) +
+        ggplot2::labs(title = paste0("Class components sor state ", state_1_hires_params()[["State"]][1]))
+
+    ggiraph::girafe(ggobj = plot,
+                    width_svg = 30,
+                    height_svg = 10)
 
   })
 
-  output[["plot_peptides_coverage"]] <- renderPlot({
+  output[["state_2_class_components"]] <- ggiraph::renderGirafe({
 
-    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
+    validate(need(!is.null(state_2_params()), "Please upload necessary files."))
 
-    gridExtra::grid.arrange(
-      HRaDeX::plot_cov_class(state_1_params(),
-                             fractional = fractional()) +
-        ggplot2::labs(title = paste0("Class components sor state ", state_1_params()[["State"]][1])),
-      HRaDeX::plot_cov_class(state_2_params(),
-                             fractional = fractional()) +
+    plot <- HRaDeX::plot_hires_components(state_2_hires_params(),
+                                          interactive = T) +
+      ggplot2::labs(title = paste0("Class components sor state ", state_2_hires_params()[["State"]][1]))
+
+    ggiraph::girafe(ggobj = plot,
+                    width_svg = 30,
+                    height_svg = 10)
+
+  })
+
+
+  output[["plot_peptides_coverage_1"]] <- ggiraph::renderGirafe({
+
+    validate(need(!is.null(state_1_params()), ""))
+
+    plot <- HRaDeX::plot_cov_class(state_1_params(),
+                             fractional = fractional(),
+                             interactive = T) +
+        ggplot2::labs(title = paste0("Class components sor state ", state_1_params()[["State"]][1]))
+
+    ggiraph::girafe(ggobj = plot,
+                    width_svg = 30,
+                    height_svg = 7)
+
+
+  })
+
+  output[["plot_peptides_coverage_2"]] <- ggiraph::renderGirafe({
+
+    validate(need(!is.null(state_2_params()), ""))
+
+   plot <- HRaDeX::plot_cov_class(state_2_params(),
+                             fractional = fractional(),
+                             interactive = T) +
         ggplot2::labs(title = paste0("Class components sor state ", state_2_params()[["State"]][1]))
-    )
 
+   ggiraph::girafe(ggobj = plot,
+                   width_svg = 30,
+                   height_svg = 7)
 
   })
-
   ## TAB: Peptides ##
 
   peptide_list <- reactive({
@@ -183,7 +216,7 @@ app_server <- function(input, output, session) {
 
   })
 
-  output[["uc_plot"]] <- renderPlot({
+  output[["uc_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(input[["peptide_list_data_rows_selected"]]), "Please select a peptide on the left in the `UC data` section." ))
 
@@ -201,7 +234,8 @@ app_server <- function(input, output, session) {
                     tmp_fit_2,
                     state_1_params(),
                     state_2_params(),
-                    fractional = fractional())
+                    fractional = fractional(),
+                    interactive = T)
   })
 
 }

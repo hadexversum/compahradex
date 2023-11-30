@@ -6,6 +6,8 @@ Description: PKG_DESC.
 License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.1),
+    HRaDeX, 
+    ggiraph,
     golem (>= 0.3.3),
     shiny (>= 1.7.4)
 Encoding: UTF-8
