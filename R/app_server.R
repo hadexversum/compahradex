@@ -131,13 +131,8 @@ app_server <- function(input, output, session) {
 
     validate(need(!is.null(state_1_params()), "Please upload necessary files."))
 
-    plot <- HRaDeX::plot_hires_components(state_1_hires_params(),
-                                          interactive = T) +
-        ggplot2::labs(title = paste0("Class components sor state ", state_1_hires_params()[["State"]][1]))
-
-    ggiraph::girafe(ggobj = plot,
-                    width_svg = 30,
-                    height_svg = 10)
+    HRaDeX::plot_hires_components(state_1_hires_params(),
+                                          interactive = T)
 
   })
 
@@ -145,13 +140,9 @@ app_server <- function(input, output, session) {
 
     validate(need(!is.null(state_2_params()), "Please upload necessary files."))
 
-    plot <- HRaDeX::plot_hires_components(state_2_hires_params(),
-                                          interactive = T) +
-      ggplot2::labs(title = paste0("Class components sor state ", state_2_hires_params()[["State"]][1]))
+    HRaDeX::plot_hires_components(state_2_hires_params(),
+                                          interactive = T)
 
-    ggiraph::girafe(ggobj = plot,
-                    width_svg = 30,
-                    height_svg = 10)
 
   })
 
@@ -160,14 +151,10 @@ app_server <- function(input, output, session) {
 
     validate(need(!is.null(state_1_params()), ""))
 
-    plot <- HRaDeX::plot_cov_class(state_1_params(),
+    HRaDeX::plot_cov_class(state_1_params(),
                              fractional = fractional(),
-                             interactive = T) +
-        ggplot2::labs(title = paste0("Class components sor state ", state_1_params()[["State"]][1]))
+                             interactive = T)
 
-    ggiraph::girafe(ggobj = plot,
-                    width_svg = 30,
-                    height_svg = 7)
 
 
   })
@@ -176,14 +163,9 @@ app_server <- function(input, output, session) {
 
     validate(need(!is.null(state_2_params()), ""))
 
-   plot <- HRaDeX::plot_cov_class(state_2_params(),
+    HRaDeX::plot_cov_class(state_2_params(),
                              fractional = fractional(),
-                             interactive = T) +
-        ggplot2::labs(title = paste0("Class components sor state ", state_2_params()[["State"]][1]))
-
-   ggiraph::girafe(ggobj = plot,
-                   width_svg = 30,
-                   height_svg = 7)
+                             interactive = T)
 
   })
   ## TAB: Peptides ##
