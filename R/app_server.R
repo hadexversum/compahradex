@@ -54,6 +54,28 @@ app_server <- function(input, output, session) {
 
   })
 
+  ##
+
+  observe({
+
+    y_max <- if(fractional()){ 1.2 } else {max(state_1_uc()[["deut_uptake"]], state_2_uc()[["deut_uptake"]])}
+
+    updateSliderInput(inputId = "uc_plot_y_range",
+                      max = y_max,
+                      value = c(0, y_max))
+
+  })
+
+  observe({
+
+    x_max <- max(state_1_uc()[["End"]])
+
+    updateSliderInput(inputId = "uc_plot_x_range",
+                      max = x_max,
+                      value = c(0, x_max))
+
+  })
+
   check_protein <- reactive({
 
     state_1_params()[["Protein"]][1] == state_2_params()[["Protein"]][1]
@@ -178,6 +200,8 @@ app_server <- function(input, output, session) {
 
   output[["peptide_list_data"]] <- DT::renderDataTable({
 
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
+
     DT::datatable(data = peptide_list(),
               class = "table-bordered table-condensed",
               extensions = "Buttons",
@@ -198,6 +222,7 @@ app_server <- function(input, output, session) {
 
   })
 
+
   output[["uc_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(input[["peptide_list_data_rows_selected"]]), "Please select a peptide on the left in the `UC data` section." ))
@@ -212,12 +237,16 @@ app_server <- function(input, output, session) {
                                Start == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Start"]],
                                End == peptide_list()[[input[["peptide_list_data_rows_selected"]], "End"]])
 
-    HRaDeX::plot_uc(tmp_fit_1,
+    plt <- HRaDeX::plot_uc(tmp_fit_1,
                     tmp_fit_2,
                     state_1_params(),
                     state_2_params(),
                     fractional = fractional(),
                     interactive = T)
+
+    ggiraph::girafe_options(plt,
+                            ggiraph::opts_zoom(min = .7, max = 2) )
+
   })
 
 }

@@ -40,10 +40,16 @@ app_ui <- function(request) {
             p("See the uptake curve for selected peptide in tab `Peptides`"),
             dataTableOutput_h("peptide_list_data"),
             actionButton(inputId = "reset_peptide_list",
-                         label = "Reset chosen peptides")
-
-
-
+                         label = "Reset chosen peptides"),
+            br()
+            # sliderInput(inputId = "uc_plot_x_range",
+            #             label = "Select x range: ",
+            #             min = 0, max = 100,
+            #             value = c(0, 100)),
+            # sliderInput(inputId = "uc_plot_y_range",
+            #             label = "Select y range: ",
+            #             min = 0, max = 100,
+            #             value = c(0, 100))
           )
         ),
         mainPanel(
