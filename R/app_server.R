@@ -122,6 +122,12 @@ app_server <- function(input, output, session) {
 
   })
 
+  uc_diff_dataset <- reactive({
+
+    HRaDeX::create_uc_distance_dataset(state_1_uc(),
+                                       state_2_uc())
+  })
+
   ## TAB: HIRES ##
 
   output[["states_params_plot"]] <- ggiraph::renderGirafe({
@@ -143,18 +149,21 @@ app_server <- function(input, output, session) {
   output[["uc_diff_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
-    HRaDeX::plot_uc_distance(state_1_uc(),
-                             state_2_uc(),
+
+    HRaDeX::plot_uc_distance(uc_diff_dataset(),
+                             fractional = F,
                              interactive = T)
 
   })
+
+  ## TAB: CLASSIFICATION ##
 
   output[["state_1_class_components"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_params()), "Please upload necessary files."))
 
     HRaDeX::plot_hires_components(state_1_hires_params(),
-                                          interactive = T)
+                                  interactive = T)
 
   })
 
@@ -163,7 +172,7 @@ app_server <- function(input, output, session) {
     validate(need(!is.null(state_2_params()), "Please upload necessary files."))
 
     HRaDeX::plot_hires_components(state_2_hires_params(),
-                                          interactive = T)
+                                  interactive = T)
 
 
   })
@@ -174,8 +183,8 @@ app_server <- function(input, output, session) {
     validate(need(!is.null(state_1_params()), ""))
 
     HRaDeX::plot_cov_class(state_1_params(),
-                             fractional = fractional(),
-                             interactive = T)
+                           fractional = fractional(),
+                           interactive = T)
 
 
 
@@ -186,11 +195,12 @@ app_server <- function(input, output, session) {
     validate(need(!is.null(state_2_params()), ""))
 
     HRaDeX::plot_cov_class(state_2_params(),
-                             fractional = fractional(),
-                             interactive = T)
+                           fractional = fractional(),
+                           interactive = T)
 
   })
-  ## TAB: Peptides ##
+
+  ## TAB: UPTAKE CURVES ##
 
   peptide_list <- reactive({
 
@@ -248,5 +258,52 @@ app_server <- function(input, output, session) {
                             ggiraph::opts_zoom(min = .7, max = 2) )
 
   })
+
+  ## TAB: STRUCTURE ##
+
+  protein_structure <- reactive({
+
+    validate(need(!is.null(input[["pdb_file"]]), "Please provide pdb file to see the 3D structure."))
+
+    HRaDeX::plot_3d_structure_blank(pdb_file_path = input[["pdb_file"]][["datapath"]])
+
+  })
+
+  protein_structure_out <- reactive({
+
+    # browser()
+
+    color_positions <- c(0)
+    if("color distance" %in% input[["values_structure"]]){
+      color_positions <- HRaDeX::prepare_diff_data(two_states_dataset(),
+                                                   "dist",
+                                                   input[["threshold_color"]])
+    }
+
+    uc_positions <- c(0)
+    if("uc distance" %in% input[["values_structure"]]){
+
+      uc_positions <- HRaDeX::prepare_diff_data(uc_diff_dataset(),
+                                                "uptake_diff",
+                                                input[["threshold_uc"]])
+    }
+
+    r3dmol::m_set_style(protein_structure(),
+                        sel = r3dmol::m_sel(resi = color_positions),
+                        style = r3dmol::m_style_cartoon(color = "blue")) |>
+      r3dmol::m_set_style(sel = r3dmol::m_sel(resi = uc_positions),
+                          style = r3dmol::m_style_cartoon(color = "orange")) |>
+      r3dmol::m_set_style(sel = r3dmol::m_sel(resi = intersect(color_positions, uc_positions)),
+                          style = r3dmol::m_style_cartoon(color = "red"))
+
+
+  })
+
+  output[["protein_structure"]] <- r3dmol::renderR3dmol({
+
+    r3dmol::m_button_spin(protein_structure_out())
+
+  })
+
 
 }

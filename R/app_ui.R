@@ -31,17 +31,19 @@ app_ui <- function(request) {
             fileInput(inputId = "file_state_1_uc",
                       label = "Provide uc data for the first state:"),
             fileInput(inputId = "file_state_2_uc",
-                      label = "Provide uc data for the second state:")
+                      label = "Provide uc data for the second state:"),
+            fancy_icon = "cogs"
           ),
           br(),
           collapsible_card(
             init_collapsed = T,
             title = "UC data",
-            p("See the uptake curve for selected peptide in tab `Peptides`"),
+            p("See the uptake curve for selected peptide in tab `Uptake Curves`"),
             dataTableOutput_h("peptide_list_data"),
             actionButton(inputId = "reset_peptide_list",
                          label = "Reset chosen peptides"),
-            br()
+            br(),
+            fancy_icon = "cogs"
             # sliderInput(inputId = "uc_plot_x_range",
             #             label = "Select x range: ",
             #             min = 0, max = 100,
@@ -50,24 +52,83 @@ app_ui <- function(request) {
             #             label = "Select y range: ",
             #             min = 0, max = 100,
             #             value = c(0, 100))
+          ),
+          br(),
+          collapsible_card(
+            init_collapsed = T,
+            title = "Structure",
+            p("If the structure of the protein is available, upload the pdb file:"),
+            fileInput(inputId = "pdb_file",
+                      label = "PDB file: ",
+                      accept = ".pdb"),
+            checkboxGroupInput(inputId = "values_structure",
+                        label = "Select values to be shown on the structure:",
+                        choices = c("color distance", "uc distance"),
+                        selected = "color distance"
+            ),
+            numericInput(inputId = "threshold_color",
+                         label = "Threshold for color distance:",
+                         value = 0.1,
+                         min = 0, max = 100),
+            numericInput(inputId = "threshold_uc",
+                         label = "Threshold for UC distance:",
+                         value = 150,
+                         min = 0, max = 100),
+            fancy_icon = "cogs"
           )
         ),
         mainPanel(
           tabsetPanel(
             tabPanel(
-              "Hires",
-              ggiraph::girafeOutput("states_params_plot"),
-              ggiraph::girafeOutput("distance_plot"),
-              p("The residues with NA values for either state are not shown."),
-              ggiraph::girafeOutput("uc_diff_plot"),
-              ggiraph::girafeOutput("state_1_class_components"),
-              ggiraph::girafeOutput("state_2_class_components", width = "100%")
+              "Hires results",
+              br(),
+              tabsetPanel(
+                tabPanel(
+                  "Plot",
+                  ggiraph::girafeOutput("states_params_plot"),
+                ),
+                tabPanel(
+                  "Data"
+                )
+              ),
+              br(),
+              tabsetPanel(
+                tabPanel(
+                  "Plot",
+                  ggiraph::girafeOutput("distance_plot"),
+                  p("The residues with NA values for either state are not shown."),
+
+                ),
+                tabPanel(
+                  "Data"
+                )
+              ),
+              br(),
+              tabsetPanel(
+                tabPanel(
+                  "Plot",
+                  ggiraph::girafeOutput("uc_diff_plot")
+                ),
+                tabPanel(
+                  "Data"
+                )
+              )
             ),
             tabPanel(
-              "Peptides",
+              "Uptake Curves",
+              ggiraph::girafeOutput("uc_plot")
+            ),
+            tabPanel(
+              "Classification",
               ggiraph::girafeOutput("plot_peptides_coverage_1"),
               ggiraph::girafeOutput("plot_peptides_coverage_2"),
-              ggiraph::girafeOutput("uc_plot")
+              ggiraph::girafeOutput("state_1_class_components"),
+              ggiraph::girafeOutput("state_2_class_components")
+            ),
+            tabPanel(
+              "Structure",
+              br(),
+              r3dmol::r3dmolOutput("protein_structure", width = "100%", height = "1000px")
             )
           )
 
