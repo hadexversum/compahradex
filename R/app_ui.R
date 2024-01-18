@@ -44,14 +44,6 @@ app_ui <- function(request) {
                          label = "Reset chosen peptides"),
             br(),
             fancy_icon = "cogs"
-            # sliderInput(inputId = "uc_plot_x_range",
-            #             label = "Select x range: ",
-            #             min = 0, max = 100,
-            #             value = c(0, 100)),
-            # sliderInput(inputId = "uc_plot_y_range",
-            #             label = "Select y range: ",
-            #             min = 0, max = 100,
-            #             value = c(0, 100))
           ),
           br(),
           collapsible_card(
@@ -61,25 +53,40 @@ app_ui <- function(request) {
             fileInput(inputId = "pdb_file",
                       label = "PDB file: ",
                       accept = ".pdb"),
-            checkboxGroupInput(inputId = "values_structure",
-                        label = "Select values to be shown on the structure:",
-                        choices = c("color distance", "uc distance"),
-                        selected = "color distance"
+            h3("Which values should be presented on the structure?"),
+            fluidRow(
+              column(
+                width = 6,
+                checkboxInput(inputId = "str_show_color_dist",
+                              label = "Color distance",
+                              value = F),
+                numericInput(inputId = "threshold_color",
+                             label = "Threshold for color distance:",
+                             value = 0.1,
+                             min = 0, max = 100),
+                p("Residues with color distance value above the threshold are presented in color aquamarine.")
+              ),
+              column(
+                width = 6,
+                checkboxInput(inputId = "str_show_uc_dist",
+                              label = "UC distance",
+                              value = F),
+                numericInput(inputId = "threshold_uc",
+                             label = "Threshold for UC distance:",
+                             value = 150,
+                             min = 0, max = 100),
+                p("Residues with UC distance value above the threshold are presented in color pink.")
+
+              )
             ),
-            numericInput(inputId = "threshold_color",
-                         label = "Threshold for color distance:",
-                         value = 0.1,
-                         min = 0, max = 100),
-            numericInput(inputId = "threshold_uc",
-                         label = "Threshold for UC distance:",
-                         value = 150,
-                         min = 0, max = 100),
+            p("When both distances are selected, residueas meeting both criteria are presented in color orange. Those colors are beyond classification color code to avoid confusion."),
             fancy_icon = "cogs"
           )
         ),
         mainPanel(
           tabsetPanel(
             tabPanel(
+
               "Hires results",
               br(),
               tabsetPanel(
@@ -88,7 +95,8 @@ app_ui <- function(request) {
                   ggiraph::girafeOutput("states_params_plot"),
                 ),
                 tabPanel(
-                  "Data"
+                  "Data",
+                  DT::dataTableOutput("states_params_plot_data")
                 )
               ),
               br(),
@@ -100,23 +108,30 @@ app_ui <- function(request) {
 
                 ),
                 tabPanel(
-                  "Data"
+                  "Data",
+                  DT::dataTableOutput("distance_plot_data")
                 )
               ),
               br(),
               tabsetPanel(
                 tabPanel(
                   "Plot",
-                  ggiraph::girafeOutput("uc_diff_plot")
+                  ggiraph::girafeOutput("uc_diff_plot"),
+                  checkboxInput(inputId = "is_diff_fractional",
+                                label = "See fractional data?",
+                                value = F)
                 ),
                 tabPanel(
-                  "Data"
+                  "Data",
+                  DT::dataTableOutput("uc_diff_plot_data")
                 )
               )
             ),
             tabPanel(
               "Uptake Curves",
-              ggiraph::girafeOutput("uc_plot")
+              br(),
+              ggiraph::girafeOutput("uc_plot",
+                                    height = "500px")
             ),
             tabPanel(
               "Classification",
@@ -128,7 +143,8 @@ app_ui <- function(request) {
             tabPanel(
               "Structure",
               br(),
-              r3dmol::r3dmolOutput("protein_structure", width = "100%", height = "1000px")
+              r3dmol::r3dmolOutput("protein_structure", width = "100%", height = "1000px"),
+              p("To make the image of the structure, set the protein in desired position, stop the spinning and make a screen shot. ")
             )
           )
 

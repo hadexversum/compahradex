@@ -138,6 +138,23 @@ app_server <- function(input, output, session) {
                             interactive = T)
   })
 
+  output[["states_params_plot_data"]] <- DT::renderDataTable({
+
+    DT::datatable(rbind(dplyr::mutate(state_1_hires_params(),
+                                      n_1 = formatC(n_1, 2),
+                                      n_2 = formatC(n_2, 2),
+                                      n_3 = formatC(n_3, 2),
+                                      k_est = formatC(k_est, 4)),
+                        dplyr::mutate(state_2_hires_params(),
+                                      n_1 = formatC(n_1, 2),
+                                      n_2 = formatC(n_2, 2),
+                                      n_3 = formatC(n_3, 2),
+                                      k_est = formatC(k_est, 4))))
+
+  })
+
+  ##
+
   output[["distance_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
@@ -146,15 +163,34 @@ app_server <- function(input, output, session) {
 
   })
 
+  output[["distance_plot_data"]] <- DT::renderDataTable({
+
+    DT::datatable(dplyr::mutate(two_states_dataset(),
+                                dist = formatC(dist, 2)))
+
+  })
+
+  ##
+
   output[["uc_diff_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
 
     HRaDeX::plot_uc_distance(uc_diff_dataset(),
-                             fractional = F,
+                             fractional = input[["is_diff_fractional"]],
                              interactive = T)
 
   })
+
+  output[["uc_diff_plot_data"]] <- DT::renderDataTable({
+
+    DT::datatable(dplyr::mutate(uc_diff_dataset(),
+                                frac_uptake_diff = formatC(frac_uptake_diff, 4),
+                                uptake_diff = formatC(uptake_diff, 4)))
+
+  })
+
+  ##
 
   ## TAB: CLASSIFICATION ##
 
@@ -274,34 +310,38 @@ app_server <- function(input, output, session) {
     # browser()
 
     color_positions <- c(0)
-    if("color distance" %in% input[["values_structure"]]){
+    if(input[["str_show_color_dist"]]){
       color_positions <- HRaDeX::prepare_diff_data(two_states_dataset(),
                                                    "dist",
                                                    input[["threshold_color"]])
     }
 
     uc_positions <- c(0)
-    if("uc distance" %in% input[["values_structure"]]){
+    if(input[["str_show_uc_dist"]]){
 
+      uc_value <- if(input[["is_diff_fractional"]]) {"frac_uptake_diff"} else {"uptake_diff"}
       uc_positions <- HRaDeX::prepare_diff_data(uc_diff_dataset(),
-                                                "uptake_diff",
+                                                uc_value,
                                                 input[["threshold_uc"]])
     }
 
     r3dmol::m_set_style(protein_structure(),
                         sel = r3dmol::m_sel(resi = color_positions),
-                        style = r3dmol::m_style_cartoon(color = "blue")) |>
+                        style = r3dmol::m_style_cartoon(color = "aquamarine")) |>
       r3dmol::m_set_style(sel = r3dmol::m_sel(resi = uc_positions),
-                          style = r3dmol::m_style_cartoon(color = "orange")) |>
+                          style = r3dmol::m_style_cartoon(color = "deeppink")) |>
       r3dmol::m_set_style(sel = r3dmol::m_sel(resi = intersect(color_positions, uc_positions)),
-                          style = r3dmol::m_style_cartoon(color = "red"))
+                          style = r3dmol::m_style_cartoon(color = "darkorange"))
 
 
   })
 
+
+
   output[["protein_structure"]] <- r3dmol::renderR3dmol({
 
-    r3dmol::m_button_spin(protein_structure_out())
+
+      r3dmol::m_button_spin(protein_structure_out())
 
   })
 
