@@ -133,12 +133,15 @@ app_server <- function(input, output, session) {
   output[["states_params_plot"]] <- ggiraph::renderGirafe({
 
     validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
+
     HRaDeX::plot_two_states(state_1_hires_params(),
                             state_2_hires_params(),
                             interactive = T)
   })
 
   output[["states_params_plot_data"]] <- DT::renderDataTable({
+
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
 
     DT::datatable(rbind(dplyr::mutate(state_1_hires_params(),
                                       n_1 = formatC(n_1, 2),
@@ -163,10 +166,24 @@ app_server <- function(input, output, session) {
 
   })
 
+
+  output[["k_distance_plot"]] <- ggiraph::renderGirafe({
+
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
+
+    HRaDeX::plot_k_distance(two_states_dataset(),
+                            interactive = T)
+
+  })
+
+
   output[["distance_plot_data"]] <- DT::renderDataTable({
 
+    validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), "Please upload necessary files."))
+
     DT::datatable(dplyr::mutate(two_states_dataset(),
-                                dist = formatC(dist, 2)))
+                                dist = formatC(dist, 2),
+                                k_diff = formatC(k_diff, 2)))
 
   })
 
@@ -182,13 +199,29 @@ app_server <- function(input, output, session) {
 
   })
 
+  output[["uc_diff_plot_2"]] <- ggiraph::renderGirafe({
+
+    validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
+
+    HRaDeX::plot_uc_real_dist(uc_diff_dataset(),
+                              interactive = T)
+
+  })
+
+  ##
+
   output[["uc_diff_plot_data"]] <- DT::renderDataTable({
+
+    validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
 
     DT::datatable(dplyr::mutate(uc_diff_dataset(),
                                 frac_uptake_diff = formatC(frac_uptake_diff, 4),
-                                uptake_diff = formatC(uptake_diff, 4)))
+                                uptake_diff = formatC(uptake_diff, 4),
+                                frac_uptake_dist = formatC(frac_uptake_dist, 4),
+                                uptake_dist = formatC(uptake_dist, 4)))
 
   })
+
 
   ##
 

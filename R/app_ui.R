@@ -91,7 +91,7 @@ app_ui <- function(request) {
               br(),
               tabsetPanel(
                 tabPanel(
-                  "Plot",
+                  "Hires Plot",
                   ggiraph::girafeOutput("states_params_plot"),
                 ),
                 tabPanel(
@@ -102,8 +102,14 @@ app_ui <- function(request) {
               br(),
               tabsetPanel(
                 tabPanel(
-                  "Plot",
+                  "Color Dist Plot",
                   ggiraph::girafeOutput("distance_plot"),
+                  p("The residues with NA values for either state are not shown."),
+
+                ),
+                tabPanel(
+                  "K Dist Plot",
+                  ggiraph::girafeOutput("k_distance_plot"),
                   p("The residues with NA values for either state are not shown."),
 
                 ),
@@ -115,11 +121,21 @@ app_ui <- function(request) {
               br(),
               tabsetPanel(
                 tabPanel(
-                  "Plot",
+                  "UC Dist Plot",
                   ggiraph::girafeOutput("uc_diff_plot"),
                   checkboxInput(inputId = "is_diff_fractional",
                                 label = "See fractional data?",
-                                value = F)
+                                value = F),
+                  p("Method of calculation:"),
+                  p("For every time point of uptake curve for two states is calculated the value: difference between uptake in first state and second state, divided by the sum of uncertainty. Then, all the values from the time points are summarised to get one value for each peptide.")
+                ),
+                tabPanel(
+                  "UC Dist Plot 2",
+                  ggiraph::girafeOutput("uc_diff_plot_2"),
+                  p("Method of calculation:"),
+                  p("For every time point of uptake curve for two states it is recognized which state has higher value and which has lower. From the higher value is substracted the uncertainty value to have the lowest possible value. To the lower value the uncertainty value is added to get the highest possible value. Now, the difference is calculated. Values from all of the time points are summarised to get one value of difference between uptake curves for each peptide."),
+                  p("For now only in fractional form.")
+
                 ),
                 tabPanel(
                   "Data",
