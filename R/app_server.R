@@ -195,6 +195,7 @@ app_server <- function(input, output, session) {
 
     HRaDeX::plot_uc_distance(uc_diff_dataset(),
                              fractional = input[["is_diff_fractional"]],
+                             squared = input[["is_diff_plot_squared"]],
                              interactive = T)
 
   })
@@ -204,6 +205,8 @@ app_server <- function(input, output, session) {
     validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
 
     HRaDeX::plot_uc_real_dist(uc_diff_dataset(),
+                              fractional = input[["is_diff_plot_2_fractional"]],
+                              squared = input[["is_diff_plot_2_squared"]],
                               interactive = T)
 
   })
