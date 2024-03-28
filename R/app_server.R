@@ -276,7 +276,8 @@ app_server <- function(input, output, session) {
 
   peptide_list <- reactive({
 
-    HRaDeX::get_peptide_list(rbind(state_1_uc(), state_1_uc()))
+    # browser()
+    HRaDeX::get_peptide_list_v2(state_1_uc(), state_2_uc())
 
   })
 
@@ -307,15 +308,17 @@ app_server <- function(input, output, session) {
 
   output[["uc_plot"]] <- ggiraph::renderGirafe({
 
+    # browser()
+
     validate(need(!is.null(input[["peptide_list_data_rows_selected"]]), "Please select a peptide on the left in the `UC data` section." ))
 
     tmp_fit_1 <- dplyr::filter(state_1_uc(),
-                               Sequence == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Sequence"]],
+                               # Sequence == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Sequence"]],
                                Start == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Start"]],
                                End == peptide_list()[[input[["peptide_list_data_rows_selected"]], "End"]])
 
     tmp_fit_2 <- dplyr::filter(state_2_uc(),
-                               Sequence == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Sequence"]],
+                               # Sequence == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Sequence"]],
                                Start == peptide_list()[[input[["peptide_list_data_rows_selected"]], "Start"]],
                                End == peptide_list()[[input[["peptide_list_data_rows_selected"]], "End"]])
 
@@ -324,7 +327,7 @@ app_server <- function(input, output, session) {
                     state_1_params(),
                     state_2_params(),
                     fractional = fractional(),
-                    interactive = T)
+                    interactive = F)
 
     ggiraph::girafe_options(plt,
                             ggiraph::opts_zoom(min = .7, max = 2) )

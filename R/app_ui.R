@@ -52,7 +52,7 @@ app_ui <- function(request) {
             p("If the structure of the protein is available, upload the pdb file:"),
             fileInput(inputId = "pdb_file",
                       label = "PDB file: ",
-                      accept = ".pdb"),
+                      accept = c(".pdb", ".cif")),
             h3("Which values should be presented on the structure?"),
             fluidRow(
               column(
