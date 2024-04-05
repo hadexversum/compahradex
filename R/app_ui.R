@@ -6,10 +6,12 @@
 #' @noRd
 app_ui <- function(request) {
   tagList(
+
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
+      tags$style(type='text/css', '#txt_out {white-space: pre-wrap;}'),
       br(),
       br(),
       sidebarLayout(
@@ -19,6 +21,7 @@ app_ui <- function(request) {
           img(src='./www/logo_2.png', width = "40%", align = "center"),
           br(),
           br(),
+          p("Compare fit results from HRaDeX for two biological states:"),
           collapsible_card(
             title = "Input data",
             p("Tip: Fit results can be found in the `Params` tab in HRaDeX."),
@@ -26,19 +29,20 @@ app_ui <- function(request) {
                       label = "Provide fit results for the first state:"),
             fileInput(inputId = "file_state_2_params",
                       label = "Provide fit results for the second state:"),
-            verbatimTextOutput("input_status"),
+            verbatimTextOutput("fit_data_status"),
             p("Tip: UC data can be found in the `UC data` tab in HRaDeX."),
             fileInput(inputId = "file_state_1_uc",
                       label = "Provide uc data for the first state:"),
             fileInput(inputId = "file_state_2_uc",
                       label = "Provide uc data for the second state:"),
+            verbatimTextOutput("uc_data_status"),
             fancy_icon = "cogs"
           ),
           br(),
           collapsible_card(
             init_collapsed = T,
             title = "UC data",
-            p("See the uptake curve for selected peptide in tab `Uptake Curves`"),
+            p("See the uptake curve for selected peptide in tab `Uptake Curves`."),
             dataTableOutput_h("peptide_list_data"),
             actionButton(inputId = "reset_peptide_list",
                          label = "Reset chosen peptides"),
@@ -53,6 +57,7 @@ app_ui <- function(request) {
             fileInput(inputId = "pdb_file",
                       label = "PDB file: ",
                       accept = c(".pdb", ".cif")),
+            p("The structure is to be found in the tab `Structure`."),
             h3("Which values should be presented on the structure?"),
             fluidRow(
               column(
@@ -125,7 +130,7 @@ app_ui <- function(request) {
                   ggiraph::girafeOutput("uc_diff_plot_2"),
                   checkboxInput(inputId = "is_diff_plot_2_fractional",
                                 label = "See fractional data?",
-                                value = F),
+                                value = T),
                   checkboxInput(inputId = "is_diff_plot_2_squared",
                                 label = "See squared data?",
                                 value = F),
@@ -138,7 +143,7 @@ app_ui <- function(request) {
                   ggiraph::girafeOutput("uc_diff_plot"),
                   checkboxInput(inputId = "is_diff_fractional",
                                 label = "See fractional data?",
-                                value = F),
+                                value = T),
                   checkboxInput(inputId = "is_diff_plot_squared",
                                 label = "See squared data?",
                                 value = F),
@@ -160,9 +165,14 @@ app_ui <- function(request) {
             ),
             tabPanel(
               "Classification",
+              br(),
+              p("Classification results for the first state:"),
               ggiraph::girafeOutput("plot_peptides_coverage_1"),
+              p("Classification results for the second state:"),
               ggiraph::girafeOutput("plot_peptides_coverage_2"),
+              p("Classification components for the first state:"),
               ggiraph::girafeOutput("state_1_class_components"),
+              p("Classification components for the second state:"),
               ggiraph::girafeOutput("state_2_class_components")
             ),
             tabPanel(

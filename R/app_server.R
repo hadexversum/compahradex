@@ -82,7 +82,20 @@ app_server <- function(input, output, session) {
 
   })
 
-  output[["input_status"]] <- renderText({
+  fit_state_1 <- reactive({
+
+    unique(state_1_params()[["State"]])
+
+  })
+
+  fit_state_2 <- reactive({
+
+    unique(state_2_params()[["State"]])
+
+  })
+
+
+  output[["fit_data_status"]] <- renderText({
 
     validate(need(!is.null(state_1_params()) & !is.null(state_2_params()), ""))
 
@@ -96,6 +109,27 @@ app_server <- function(input, output, session) {
       paste0("Uploaded files are for different proteins.")
     }
 
+
+  })
+
+  output[["uc_data_status"]] <- renderText({
+
+    validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), ""))
+
+    msg <- "States consistent with fit results."
+
+    if(fit_state_1() != unique(state_1_uc()[["State"]])){
+
+      msg <- "States from UC data not consistent with those from fit results."
+    }
+
+    if(fit_state_2() != unique(state_2_uc()[["State"]])){
+
+      msg <- "States from UC data not consistent with those from fit results."
+
+    }
+
+    msg
 
   })
 
@@ -252,7 +286,7 @@ app_server <- function(input, output, session) {
 
   output[["plot_peptides_coverage_1"]] <- ggiraph::renderGirafe({
 
-    validate(need(!is.null(state_1_params()), ""))
+    validate(need(!is.null(state_1_params()), "Please upload necessary files."))
 
     HRaDeX::plot_cov_class(state_1_params(),
                            fractional = fractional(),
@@ -264,7 +298,7 @@ app_server <- function(input, output, session) {
 
   output[["plot_peptides_coverage_2"]] <- ggiraph::renderGirafe({
 
-    validate(need(!is.null(state_2_params()), ""))
+    validate(need(!is.null(state_2_params()), "Please upload necessary files."))
 
     HRaDeX::plot_cov_class(state_2_params(),
                            fractional = fractional(),
@@ -276,7 +310,9 @@ app_server <- function(input, output, session) {
 
   peptide_list <- reactive({
 
-    # browser()
+    validate(need(!is.null(state_1_uc()), "Please upload necessary files."))
+    validate(need(!is.null(state_2_uc()), "Please upload necessary files."))
+
     HRaDeX::get_peptide_list_v2(state_1_uc(), state_2_uc())
 
   })
@@ -327,7 +363,7 @@ app_server <- function(input, output, session) {
                     state_1_params(),
                     state_2_params(),
                     fractional = fractional(),
-                    interactive = F)
+                    interactive = T)
 
     ggiraph::girafe_options(plt,
                             ggiraph::opts_zoom(min = .7, max = 2) )
