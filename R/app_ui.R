@@ -97,7 +97,7 @@ app_ui <- function(request) {
               tabsetPanel(
                 tabPanel(
                   "Hires Plot",
-                  ggiraph::girafeOutput("states_params_plot"),
+                  girafeOutput_h("states_params_plot"),
                 ),
                 tabPanel(
                   "Data",
@@ -108,13 +108,13 @@ app_ui <- function(request) {
               tabsetPanel(
                 tabPanel(
                   "Color Dist Plot",
-                  ggiraph::girafeOutput("distance_plot"),
+                  girafeOutput_h("distance_plot"),
                   p("The residues with NA values for either state are not shown."),
 
                 ),
                 tabPanel(
                   "K Dist Plot",
-                  ggiraph::girafeOutput("k_distance_plot"),
+                  girafeOutput_h("k_distance_plot"),
                   p("The residues with NA values for either state are not shown."),
 
                 ),
@@ -127,7 +127,7 @@ app_ui <- function(request) {
               tabsetPanel(
                 tabPanel(
                   "UC Dist Plot 2",
-                  ggiraph::girafeOutput("uc_diff_plot_2"),
+                  girafeOutput_h("uc_diff_plot_2"),
                   checkboxInput(inputId = "is_diff_plot_2_fractional",
                                 label = "See fractional data?",
                                 value = T),
@@ -140,7 +140,7 @@ app_ui <- function(request) {
                 ),
                 tabPanel(
                   "UC Dist Plot",
-                  ggiraph::girafeOutput("uc_diff_plot"),
+                  girafeOutput_h("uc_diff_plot"),
                   checkboxInput(inputId = "is_diff_fractional",
                                 label = "See fractional data?",
                                 value = T),
@@ -160,20 +160,20 @@ app_ui <- function(request) {
             tabPanel(
               "Uptake Curves",
               br(),
-              ggiraph::girafeOutput("uc_plot",
-                                    height = "500px")
+              girafeOutput_h("uc_plot",
+                            height = "500px")
             ),
             tabPanel(
               "Classification",
               br(),
               p("Classification results for the first state:"),
-              ggiraph::girafeOutput("plot_peptides_coverage_1"),
+              girafeOutput_h("plot_peptides_coverage_1"),
               p("Classification results for the second state:"),
-              ggiraph::girafeOutput("plot_peptides_coverage_2"),
+              girafeOutput_h("plot_peptides_coverage_2"),
               p("Classification components for the first state:"),
-              ggiraph::girafeOutput("state_1_class_components"),
+              girafeOutput_h("state_1_class_components"),
               p("Classification components for the second state:"),
-              ggiraph::girafeOutput("state_2_class_components")
+              girafeOutput_h("state_2_class_components")
             ),
             tabPanel(
               "Structure",
