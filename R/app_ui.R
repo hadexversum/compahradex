@@ -40,6 +40,15 @@ app_ui <- function(request) {
           ),
           br(),
           collapsible_card(
+            init_collapsed = F,
+            title = "Hires calculations",
+            radioButtons(inputId = "hires_method",
+                         label = "Select method of data aggregation:",
+                         choices = c("Shortest peptide" = "shortest",
+                                     "Weighted values inverse to peptide length" = "weiss"))
+          ),
+          br(),
+          collapsible_card(
             init_collapsed = T,
             title = "UC data",
             p("See the uptake curve for selected peptide in tab `Uptake Curves`."),

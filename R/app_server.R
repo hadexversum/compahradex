@@ -138,14 +138,16 @@ app_server <- function(input, output, session) {
   state_1_hires_params <- reactive({
 
     HRaDeX::calculate_hires(state_1_params(),
-                            fractional = fractional())
+                            fractional = fractional(),
+                            method = input[["hires_method"]])
 
   })
 
   state_2_hires_params <- reactive({
 
     HRaDeX::calculate_hires(state_2_params(),
-                            fractional = fractional())
+                            fractional = fractional(),
+                            method = input[["hires_method"]])
 
   })
 
