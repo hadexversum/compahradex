@@ -45,7 +45,7 @@ app_ui <- function(request) {
             radioButtons(inputId = "hires_method",
                          label = "Select method of data aggregation:",
                          choices = c("Shortest peptide" = "shortest",
-                                     "Weighted values inverse to peptide length" = "weiss"))
+                                     "Weighted values inverse to peptide length" = "weighted"))
           ),
           br(),
           collapsible_card(
