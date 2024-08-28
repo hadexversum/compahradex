@@ -13,4 +13,6 @@ compahradex is the tool to compare classification results for two biological sta
 
 Contact us at: hadex@ibb.waw.pl.
 
-This work is part of 2019/35/O/NZ2/03745 grant from National Science Centre in Poland.
+This work is part of 2019/35/O/NZ2/03745 grant from National Science Centre in Poland. The hadexversum project originated within the TEAM TECH programme of the Foundation for Polish Science co-financed by the European Union under the European Regional Development Fund (TEAM TECH CORE FACILITY/2016-2/2). 
+
+<img src="funding.png" width="45%">
