@@ -254,9 +254,9 @@ app_server <- function(input, output, session) {
     validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
 
     DT::datatable(dplyr::mutate(uc_diff_dataset(),
-                                frac_uptake_diff = formatC(frac_uptake_diff, 4),
-                                uptake_diff = formatC(uptake_diff, 4),
-                                frac_uptake_dist = formatC(frac_uptake_dist, 4),
+                                # frac_uptake_diff = formatC(frac_uptake_diff, 4),
+                                # uptake_diff = formatC(uptake_diff, 4),
+                                frac_uptake_dist = formatC(frac_uptake_dist, 4), ## distance my way
                                 uptake_dist = formatC(uptake_dist, 4)))
 
   })
@@ -394,9 +394,16 @@ app_server <- function(input, output, session) {
     }
 
     uc_positions <- c(0)
+    browser()
     if(input[["str_show_uc_dist"]]){
 
-      uc_value <- if(input[["is_diff_fractional"]]) {"frac_uptake_diff"} else {"uptake_diff"}
+      uc_value <- if(input[["is_diff_fractional"]]) {"frac_uptake_dist"} else {"uptake_dist"}
+
+      selected_uc_dist <- if(input[["str_show_uc_dist_x"]] == 1) {
+        uc_diff_dataset()
+      } else if (input[["str_show_uc_dist_x"]] == 2) {}
+
+
       uc_positions <- HRaDeX::prepare_diff_data(uc_diff_dataset(),
                                                 uc_value,
                                                 input[["threshold_uc"]])

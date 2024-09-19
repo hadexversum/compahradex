@@ -82,9 +82,10 @@ app_ui <- function(request) {
               ),
               column(
                 width = 6,
-                checkboxInput(inputId = "str_show_uc_dist",
-                              label = "UC distance",
-                              value = F),
+                checkboxGroupInput(inputId = "str_show_uc_dist",
+                                   label = "",
+                                   choices = c("UC distance" = 1,
+                                               "UC distance 2" = 2)),
                 numericInput(inputId = "threshold_uc",
                              label = "Threshold for UC distance:",
                              value = 150,
@@ -135,7 +136,7 @@ app_ui <- function(request) {
               br(),
               tabsetPanel(
                 tabPanel(
-                  "UC Dist Plot 2",
+                  "UC Dist Plot",
                   girafeOutput_h("uc_diff_plot_2"),
                   checkboxInput(inputId = "is_diff_plot_2_fractional",
                                 label = "See fractional data?",
@@ -144,21 +145,21 @@ app_ui <- function(request) {
                                 label = "See squared data?",
                                 value = F),
                   p("Method of calculation:"),
-                  p("For every time point of uptake curve for two states it is recognized which state has higher value and which has lower. From the higher value is substracted the uncertainty value to have the lowest possible value. To the lower value the uncertainty value is added to get the highest possible value. Now, the difference is calculated. Values from all of the time points are summarised to get one value of difference between uptake curves for each peptide.")
+                  p("For every time point of uptake curve for two states it is recognized which state has higher value and which has lower. From the higher value the uncertainty value is substracted to have the lowest possible value. To the lower value the uncertainty value is added to get the highest possible value. Now, the difference between this two values is calculated - if the difference is negative is changed to zero as the possible value ranges overlap. Values from all of the time points are summed to get one value of difference between uptake curves for each peptide.")
 
                 ),
-                tabPanel(
-                  "UC Dist Plot",
-                  girafeOutput_h("uc_diff_plot"),
-                  checkboxInput(inputId = "is_diff_fractional",
-                                label = "See fractional data?",
-                                value = T),
-                  checkboxInput(inputId = "is_diff_plot_squared",
-                                label = "See squared data?",
-                                value = F),
-                  p("Method of calculation:"),
-                  p("For every time point of uptake curve for two states is calculated the value: difference between uptake in first state and second state, divided by the sum of uncertainty. Then, all the values from the time points are summarised to get one value for each peptide.")
-                ),
+                # tabPanel(
+                #   "UC Dist Plot",
+                #   girafeOutput_h("uc_diff_plot"),
+                #   checkboxInput(inputId = "is_diff_fractional",
+                #                 label = "See fractional data?",
+                #                 value = T),
+                #   checkboxInput(inputId = "is_diff_plot_squared",
+                #                 label = "See squared data?",
+                #                 value = F),
+                #   p("Method of calculation:"),
+                #   p("For every time point of uptake curve for two states is calculated the value: difference between uptake in first state and second state, divided by the sum of uncertainty. Then, all the values from the time points are summarised to get one value for each peptide.")
+                # ),
 
                 tabPanel(
                   "Data",
