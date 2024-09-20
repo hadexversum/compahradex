@@ -160,6 +160,8 @@ app_server <- function(input, output, session) {
 
   uc_diff_dataset <- reactive({
 
+    validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
+
     HRaDeX::create_uc_distance_dataset(state_1_uc(),
                                        state_2_uc())
   })
@@ -181,13 +183,19 @@ app_server <- function(input, output, session) {
 
     DT::datatable(rbind(dplyr::mutate(state_1_hires_params(),
                                       n_1 = formatC(n_1, 2),
+                                      k_1 = formatC(k_1, 2),
                                       n_2 = formatC(n_2, 2),
+                                      k_2 = formatC(k_2, 2),
                                       n_3 = formatC(n_3, 2),
+                                      k_3 = formatC(k_3, 2),
                                       k_est = formatC(k_est, 4)),
                         dplyr::mutate(state_2_hires_params(),
                                       n_1 = formatC(n_1, 2),
+                                      k_1 = formatC(k_1, 2),
                                       n_2 = formatC(n_2, 2),
+                                      k_2 = formatC(k_2, 2),
                                       n_3 = formatC(n_3, 2),
+                                      k_3 = formatC(k_3, 2),
                                       k_est = formatC(k_est, 4))))
 
   })
@@ -242,7 +250,7 @@ app_server <- function(input, output, session) {
 
     HRaDeX::plot_uc_real_dist(uc_diff_dataset(),
                               fractional = input[["is_diff_plot_2_fractional"]],
-                              squared = input[["is_diff_plot_2_squared"]],
+                              squared = FALSE, # input[["is_diff_plot_2_squared"]],
                               interactive = T)
 
   })
@@ -253,7 +261,7 @@ app_server <- function(input, output, session) {
 
     validate(need(!is.null(state_1_uc()) & !is.null(state_2_uc()), "Please upload necessary files."))
 
-    DT::datatable(dplyr::mutate(uc_diff_dataset(),
+    DT::datatable(dplyr::mutate(dplyr::select(uc_diff_dataset(), -frac_uptake_diff, -uptake_diff),
                                 # frac_uptake_diff = formatC(frac_uptake_diff, 4),
                                 # uptake_diff = formatC(uptake_diff, 4),
                                 frac_uptake_dist = formatC(frac_uptake_dist, 4), ## distance my way
@@ -382,6 +390,16 @@ app_server <- function(input, output, session) {
 
   })
 
+  observe({
+
+    threshold_uc_max <- max(uc_diff_dataset()[[if(input[["is_diff_plot_2_fractional"]]) {"frac_uptake_dist"} else {"uptake_dist"}]])
+
+    updateNumericInput(inputId = "threshold_uc",
+                       value = round(threshold_uc_max/2),
+                       max = threshold_uc_max)
+
+  })
+
   protein_structure_out <- reactive({
 
     # browser()
@@ -394,15 +412,12 @@ app_server <- function(input, output, session) {
     }
 
     uc_positions <- c(0)
-    browser()
-    if(input[["str_show_uc_dist"]]){
 
-      uc_value <- if(input[["is_diff_fractional"]]) {"frac_uptake_dist"} else {"uptake_dist"}
+      if(input[["str_show_uc_dist"]]){
 
-      selected_uc_dist <- if(input[["str_show_uc_dist_x"]] == 1) {
-        uc_diff_dataset()
-      } else if (input[["str_show_uc_dist_x"]] == 2) {}
+        # browser()
 
+      uc_value <- if(input[["is_diff_plot_2_fractional"]]) {"frac_uptake_dist"} else {"uptake_dist"}
 
       uc_positions <- HRaDeX::prepare_diff_data(uc_diff_dataset(),
                                                 uc_value,
@@ -423,7 +438,6 @@ app_server <- function(input, output, session) {
 
 
   output[["protein_structure"]] <- r3dmol::renderR3dmol({
-
 
       r3dmol::m_button_spin(protein_structure_out())
 

@@ -82,10 +82,9 @@ app_ui <- function(request) {
               ),
               column(
                 width = 6,
-                checkboxGroupInput(inputId = "str_show_uc_dist",
-                                   label = "",
-                                   choices = c("UC distance" = 1,
-                                               "UC distance 2" = 2)),
+                checkboxInput(inputId = "str_show_uc_dist",
+                              label = "UC distance",
+                              value = F),
                 numericInput(inputId = "threshold_uc",
                              label = "Threshold for UC distance:",
                              value = 150,
@@ -141,9 +140,9 @@ app_ui <- function(request) {
                   checkboxInput(inputId = "is_diff_plot_2_fractional",
                                 label = "See fractional data?",
                                 value = T),
-                  checkboxInput(inputId = "is_diff_plot_2_squared",
-                                label = "See squared data?",
-                                value = F),
+                  # checkboxInput(inputId = "is_diff_plot_2_squared",
+                  #               label = "See squared data?",
+                  #               value = F),
                   p("Method of calculation:"),
                   p("For every time point of uptake curve for two states it is recognized which state has higher value and which has lower. From the higher value the uncertainty value is substracted to have the lowest possible value. To the lower value the uncertainty value is added to get the highest possible value. Now, the difference between this two values is calculated - if the difference is negative is changed to zero as the possible value ranges overlap. Values from all of the time points are summed to get one value of difference between uptake curves for each peptide.")
 
